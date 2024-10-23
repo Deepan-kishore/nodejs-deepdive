@@ -1,0 +1,23 @@
+{
+  "name": "deep-dive",
+  "version": "1.0.0",
+  "description": "This repository contains code samples, exercises, and projects that focus on advanced Node.js concepts, including clustering, the event loop, streams, and more. The goal is to provide hands-on learning and demonstrate mastery of these topics to build scalable applications.",
+  "main": " cluster.js",
+  "scripts": {
+    "cluster": "nodemon cluster.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Deepan-kishore/nodejs-deepdive.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Deepan-kishore/nodejs-deepdive/issues"
+  },
+  "homepage": "https://github.com/Deepan-kishore/nodejs-deepdive#readme",
+  "dependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
