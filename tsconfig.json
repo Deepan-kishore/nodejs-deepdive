@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "target": "es6",
+      "module": "commonjs",
+      "outDir": "./dist",         // Compiled JS files will be output to the dist folder
+      "rootDir": "./src",         // Source files will be in the src folder
+      "strict": true,             // Enable strict type-checking options
+      "esModuleInterop": true,    // Allow import of CommonJS modules using ES6-style imports
+      "skipLibCheck": true,       // Skip type checking of declaration files
+      "forceConsistentCasingInFileNames": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"]
+  }
+  
