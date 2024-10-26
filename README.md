@@ -18,5 +18,5 @@ This repository contains code samples, exercises, and projects that focus on adv
 - **Clustering**: Understanding how to scale Node.js applications using multiple processes.
 - **Event Loop**: Deep dive into the phases of the event loop and asynchronous programming.
 - **Streams**: Working with streams to handle data efficiently.
-- **Buffers**: Managing binary data directly in Node.js.
+- **Cluster enhanced Express - API - Auth**: Created a server with clusters along with auth intergrated basic API's.
 - As I continue to learn and master new concepts in Node.js, I will update this repository with new exercises, code samples, and documentation reflecting my progress.
