@@ -14,7 +14,7 @@ if (cluster.isPrimary) {
         console.log(`Message from worker ${msg}`);
     });
 
-    process.on('worker',(worker, code, signal) => {
+    cluster.on('exit', (worker: { process: { pid: any; }; }, code: any, signal: any) => {
         console.log(`Worker ${worker.process.pid} exited with code ${code} and signal ${signal}`);
     });
 
@@ -25,14 +25,14 @@ if (cluster.isPrimary) {
         });
     });
 
-    cluster.on('exit', (worker, code, signal) => {
+    cluster.on('exit', (worker: { process: { pid: any; }; }, code: any, signal: any) => {
         console.log(`Worker ${worker.process.pid} exited. Restarting...`);
         cluster.fork();
     })
 }
 else {
     
-    http.createServer((_req, res) => {
+    http.createServer((_req: any, res: { end: (arg0: string) => void; }) => {
         res.end(`Response from worker ${process.pid}`);
     }).listen(3000, () => {
         console.log(`Server is running on ${process.pid}`);
