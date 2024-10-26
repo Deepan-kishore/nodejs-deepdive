@@ -1,5 +1,6 @@
 // loginController
-import express, { Request, Response } from 'express';
+import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 
 
 
@@ -7,11 +8,22 @@ const mockUsers = {
 'jasmine': {
     role: 'admin',
     'password': '1234'},
+};
+
+export const getUser = (username:string)=>{
+    return mockUsers[username as keyof typeof mockUsers];
 }
+
+const generateToken = (name:string,role:string)=>{
+    jwt.sign({name,role},process.env.SECRET || 'secret',{
+        expiresIn: '1d'
+    })
+}
+
 
 // adminController
 
-export const adminController = (req: Request, res: Response,next:()=>void) => {
+ const adminController = (req: Request, res: Response,next:()=>void) => {
 
     const { username,role } = req.body;
     const user = mockUsers[username as keyof typeof mockUsers];
@@ -24,11 +36,12 @@ export const adminController = (req: Request, res: Response,next:()=>void) => {
         return;
     }
     res.status(200).json({ message: 'Admin control panel' });
-}
+};
+
 
 // accessProtectedController
 
-export const signuoController = (req: Request, res: Response) => {
+ const signupController = (req: Request, res: Response) => {
     const {username, password, role = 'user'} = req.body;
     if(mockUsers[username  as keyof typeof mockUsers] ){
          res.status(400).json({message: 'User already exists'});
@@ -37,9 +50,20 @@ export const signuoController = (req: Request, res: Response) => {
         password,
         role
     };
-}
 
-export const loginController = (req: Request, res: Response,next:()=>void) => {
+   try{
+    const token = generateToken(username,role);
+    res.json({
+        message: 'User created',
+        token: token
+    })
+   }
+    catch(error){
+         res.status(500).json({message: 'Server error - Error creating user'});
+    }
+};
+
+ const loginController = (req: Request, res: Response) => {
 
     const { username, password } = req.body;
 
@@ -53,14 +77,20 @@ if (getUser.password !== password) {
     return;
 }
 
-next();
+try{
+    const token = generateToken(username,getUser.role);
+    res.json({
+        message: 'User logged In',
+        data: getUser,
+        token: token
+    })
+   }
+    catch(error){
+         res.status(500).json({message: 'Server error - Error logging user'});
+    }
 
 
-}
+};
 
-module.exports = {
-    loginController,
-    signuoController,
-    adminController,
-    // accessProtectedController
-}
+
+export const  Controller = {loginController,signupController,adminController}
