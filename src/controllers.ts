@@ -1,53 +1,62 @@
 // loginController
 import { Request, Response } from 'express';
+import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-
-
-const mockUsers = {
-'jasmine': {
-    role: 'admin',
-    'password': '1234'},
-};
+const mockUsers: Record<string, { password: string; role: string }> = {
+    jasmine: {
+      role: 'admin',
+      password: '$2a$10$5D/1uC4tAgErdMZC9ujyQe.2ZZZYCH4/0rN2y.dOzd8k0w2l5aOxe', // hashed password for '1234'
+    },
+  };
 
 export const getUser = (username:string)=>{
     return mockUsers[username as keyof typeof mockUsers];
 }
 
-const generateToken = (name:string,role:string)=>{
+export const hashPassword = async (password:string)=>{
+    const hashedPassword = await bcryptjs.hashSync(password,10);
+    return hashedPassword;
+}
+
+const generateToken = (name:string,role:string)=>
     jwt.sign({name,role},process.env.SECRET || 'secret',{
         expiresIn: '1d'
     })
-}
+
 
 
 // adminController
-
- const adminController = (req: Request, res: Response,next:()=>void) => {
-
-    const { username,role } = req.body;
+// Admin Role checks already implemented in the authorize middleware
+ const adminController = (req: Request, res: Response) => {
+    const { username } = req.body;
     const user = mockUsers[username as keyof typeof mockUsers];
     if(!user){
         res.status(400).json({message: 'User not found'});
         return;
     }
-    if(user.role !== 'admin'){
-        res.status(401).json({message: 'User is not an admin'});
-        return;
-    }
-    res.status(200).json({ message: 'Admin control panel' });
+    res.status(200).json({ message: 'Admin control panel', data: user });
 };
 
 
 // accessProtectedController
-
- const signupController = (req: Request, res: Response) => {
+ const signupController = async (req: Request, res: Response) => {
     const {username, password, role = 'user'} = req.body;
+
+    if(!username || !password){
+        res.status(400).json({message: 'Username or password missing'});
+    }
     if(mockUsers[username  as keyof typeof mockUsers] ){
          res.status(400).json({message: 'User already exists'});
     }
+    const hashedPassword = await hashPassword(password);
+    if(!hashedPassword){
+        res.status(500).json({message: 'Server error - Error hashing password'});
+    }
+
+
     mockUsers[username as keyof typeof mockUsers] = {
-        password,
+        password: hashedPassword,
         role
     };
 
@@ -55,6 +64,7 @@ const generateToken = (name:string,role:string)=>{
     const token = generateToken(username,role);
     res.json({
         message: 'User created',
+        data: mockUsers[username as keyof typeof mockUsers],
         token: token
     })
    }
@@ -63,7 +73,7 @@ const generateToken = (name:string,role:string)=>{
     }
 };
 
- const loginController = (req: Request, res: Response) => {
+ const loginController = async (req: Request, res: Response) => {
 
     const { username, password } = req.body;
 
@@ -72,7 +82,8 @@ if (!getUser) {
     res.status(400).json({ message: 'User not found' });
     return;
 }
-if (getUser.password !== password) {
+const isPasswordVaid = await bcryptjs.compare(password, getUser.password);
+if (!isPasswordVaid) {
     res.status(400).json({ message: 'Invalid password' });
     return;
 }

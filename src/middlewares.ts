@@ -1,13 +1,11 @@
 import { NextFunction, Response, Request } from "express"
-import { JwtPayload } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
-import { getUser } from "./Controllers";
+import { getUser } from "./controllers";
 
 interface CustomRequest extends Request {
     user?: ReturnType<typeof getUser>;
 }
 
-// export const authMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
 export const authMiddleware = (req:CustomRequest,res:Response,next:NextFunction)=>{
    try {
     if(!req.headers.authorization){

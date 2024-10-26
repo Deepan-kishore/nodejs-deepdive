@@ -14,7 +14,7 @@ if (cluster.isPrimary) {
         console.log(`Message from worker ${msg}`);
     });
 
-    process.on('worker',(worker: { process: { pid: any; }; }, code: any, signal: any) => {
+    cluster.on('exit', (worker: { process: { pid: any; }; }, code: any, signal: any) => {
         console.log(`Worker ${worker.process.pid} exited with code ${code} and signal ${signal}`);
     });
 
